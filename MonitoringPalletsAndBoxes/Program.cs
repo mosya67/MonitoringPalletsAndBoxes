@@ -8,14 +8,37 @@ namespace MonitoringPalletsAndBoxes
         static void Main(string[] args)
         {
             generateData();
+
             var groupedAndSortedPalets = Program.palets
-            .GroupBy(palet => palet.ShelfLife)
-            .OrderBy(group => group.Key)
-            .Select(group => new
+                .GroupBy(palet => palet.ShelfLife)
+                .OrderBy(group => group.Key)
+                .Select(group => new
+                {
+                    ShelfLife = group.Key,
+                    Palets = group.OrderBy(palet => palet.Weight)
+                });
+
+            var palletsWithMaxShelfLife = palets
+                .OrderByDescending(palet => palet.Boxes.Select(box => box.ShelfLife).Max())
+                .Take(3)
+                .OrderBy(palet => palet.Volume);
+
+            Console.WriteLine("3 паллеты, которые содержат коробки с наибольшим сроком годности:\n");
+
+            foreach (Palet palet in palletsWithMaxShelfLife)
             {
-                ShelfLife = group.Key,
-                Palets = group.OrderBy(palet => palet.Weight)
-            });
+                Console.WriteLine(palet);
+
+                foreach (Box box in palet.Boxes.OrderBy(box => box.ShelfLife))
+                {
+                    Console.WriteLine(box);
+                }
+
+                Console.WriteLine();
+            }
+
+            Console.WriteLine(new string('=', 70));
+            Console.WriteLine("\nВывод всех палетов:");
 
             foreach (var group in groupedAndSortedPalets)
             {
@@ -56,11 +79,11 @@ namespace MonitoringPalletsAndBoxes
 
             for (int i = 0, boxId = 0; i < 8; i++)
             {
-                Program.palets.Add(new Palet(paletId: i, depth: 60, width: 60, height: 10));
+                Program.palets.Add(new Palet(paletId: i, depth: random.Next(60, 90), width: random.Next(60, 90), height: 10));
                 int boxCount = random.Next(2, 4);
                 for (var j = 0; j < boxCount; j++)
                 {
-                    Program.palets[i].AddBox(new Box(boxId: boxId++, depth: 10, width: 10, height: 15, weight: random.Next(10, 40), shelfLife: dates[random.Next(0, dates.Count)]));
+                    Program.palets[i].AddBox(new Box(boxId: boxId++, depth: random.Next(5, 15), width: random.Next(5, 15), height: 15, weight: random.Next(10, 40), shelfLife: dates[random.Next(0, dates.Count)]));
                 }
             }
         }
