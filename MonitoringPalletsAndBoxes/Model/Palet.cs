@@ -15,19 +15,34 @@ namespace MonitoringPalletsAndBoxes.Model
         public List<Box> Boxes { get; private set; }
         public int Weight
         {
-            get => field = Boxes.Sum(x => x.Weight) + 30;
+            get
+            {
+                if (Boxes.Count == 0)
+                    return 30;
+
+                return field = Boxes.Sum(x => x.Weight) + 30;
+            }
             private set => field = value;
         }
         public int Volume
         {
-            get => field = Boxes.Sum(x => x.Volume) + Width * Height * Depth;
+            get
+            {
+                if (Boxes.Count == 0)
+                    return Width * Height * Depth;
+
+                return field = Boxes.Sum(x => x.Volume) + Width * Height * Depth;
+            }
             private set => field = value;
         }
-        public DateOnly ShelfLife 
+        public DateOnly? ShelfLife 
         { 
             get 
             {
-                if (field == default)
+                if (Boxes.Count == 0)
+                    return null;
+
+                if (field == null)
                     return field = Boxes.Min(x => x.ShelfLife);
                 else
                     return field;
@@ -41,6 +56,7 @@ namespace MonitoringPalletsAndBoxes.Model
             Depth = depth;
             Width = width;
             Height = height;
+            Boxes = new List<Box>();
         }
 
         /// <returns>Возвращает true, если удалось добавить, если нет - false</returns>
