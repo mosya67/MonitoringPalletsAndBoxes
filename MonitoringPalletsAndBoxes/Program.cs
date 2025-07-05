@@ -24,8 +24,24 @@ namespace MonitoringPalletsAndBoxes
                 .OrderBy(palet => palet.Volume);
 
             Console.WriteLine("3 паллеты, которые содержат коробки с наибольшим сроком годности:\n");
+            Program.PrintPallets(palletsWithMaxShelfLife);
 
-            foreach (Palet palet in palletsWithMaxShelfLife)
+            Console.WriteLine(new string('=', 70));
+            Console.WriteLine("\nВывод всех палетов:");
+
+            foreach (var group in groupedAndSortedPalets)
+            {
+                Console.WriteLine($"Группа {group.ShelfLife.ToString()}:\n");
+                Program.PrintPallets(group.Palets);
+                Console.WriteLine(new string('-', 70));
+            }
+
+            Console.WriteLine();
+        }
+
+        static void PrintPallets(IEnumerable<Palet> palets)
+        {
+            foreach (Palet palet in palets)
             {
                 Console.WriteLine(palet);
 
@@ -36,30 +52,6 @@ namespace MonitoringPalletsAndBoxes
 
                 Console.WriteLine();
             }
-
-            Console.WriteLine(new string('=', 70));
-            Console.WriteLine("\nВывод всех палетов:");
-
-            foreach (var group in groupedAndSortedPalets)
-            {
-                Console.WriteLine($"Группа {group.ShelfLife.ToString()}:\n");
-
-                foreach (Palet palet in group.Palets)
-                {
-                    Console.WriteLine(palet);
-
-                    foreach (Box box in palet.Boxes.OrderBy(box => box.ShelfLife))
-                    {
-                        Console.WriteLine(box);
-                    }
-
-                    Console.WriteLine();
-                }
-
-                Console.WriteLine(new string('-', 70));
-            }
-
-            Console.WriteLine();
         }
 
         static void generateData()
